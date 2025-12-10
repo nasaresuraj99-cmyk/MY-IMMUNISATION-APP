@@ -1,0 +1,21 @@
+{
+  "name": "EPI Tracker Superadmin",
+  "short_name": "EPI Admin",
+  "description": "EPI Tracker Superadmin Panel",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

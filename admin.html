@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4CAF50">
+  <title>EPI Tracker Superadmin Panel</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>🏥 EPI Tracker - Superadmin Panel</h1>
+    <div id="userInfo"></div>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
+  <!-- Loading Indicator -->
+  <div id="loading" class="loading">Loading...</div>
+
+  <!-- Dashboard -->
+  <section id="dashboard">
+    <h2>📊 Dashboard</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>👥 Total Users</h3>
+        <p id="totalUsers" class="stat-number">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>🛡️ Admins</h3>
+        <p id="totalAdmins" class="stat-number">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>🏥 Facilities</h3>
+        <p id="totalFacilities" class="stat-number">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>🔄 Active Today</h3>
+        <p id="activeToday" class="stat-number">0</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="card">
+    <h2>⚡ Quick Actions</h2>
+    <div class="button-group">
+      <button id="showCreateForm" class="primary">➕ Create User</button>
+      <button id="exportUsers" class="secondary">📤 Export Users</button>
+      <button id="refreshBtn" class="secondary">🔄 Refresh Data</button>
+    </div>
+  </section>
+
+  <!-- Create User Form (Initially Hidden) -->
+  <section id="createForm" class="card" style="display: none;">
+    <h2>Create New User</h2>
+    <div class="form-grid">
+      <input type="email" id="newEmail" placeholder="Email" required>
+      <input type="password" id="newPassword" placeholder="Password" required>
+      <input type="text" id="newName" placeholder="Full Name">
+      <input type="tel" id="newPhone" placeholder="Phone Number">
+      <input type="text" id="newFacility" placeholder="Assigned Facility">
+      <select id="newRole">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="button-group">
+      <button id="createUserBtn" class="primary">Create User</button>
+      <button id="cancelCreate" class="secondary">Cancel</button>
+    </div>
+    <div id="createMessage" class="message"></div>
+  </section>
+
+  <!-- Search & Filter -->
+  <section class="card">
+    <h2>🔍 Search & Filter Users</h2>
+    <div class="filter-grid">
+      <input type="text" id="searchInput" placeholder="Search by name or email...">
+      <select id="roleFilter">
+        <option value="">All Roles</option>
+        <option value="superadmin">Superadmin</option>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+      </select>
+      <select id="facilityFilter">
+        <option value="">All Facilities</option>
+      </select>
+      <div class="button-group">
+        <button id="applyFilters" class="primary">Apply</button>
+        <button id="clearFilters" class="secondary">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Users List -->
+  <section class="card">
+    <h2>👥 All Users <span id="usersCount" class="badge">0</span></h2>
+    <div class="table-container">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Facility</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersList">
+          <!-- Users will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <button id="prevPage" disabled>← Previous</button>
+      <span id="pageInfo">Page 1 of 1</span>
+      <button id="nextPage" disabled>Next →</button>
+    </div>
+  </section>
+
+  <!-- Bulk Actions -->
+  <section class="card" id="bulkActions" style="display: none;">
+    <h2>⚡ Bulk Actions</h2>
+    <select id="bulkActionSelect">
+      <option value="">Select Action...</option>
+      <option value="assign_facility">Assign Facility</option>
+      <option value="assign_role">Assign Role</option>
+      <option value="export_selected">Export Selected</option>
+      <option value="delete_selected">Delete Selected</option>
+    </select>
+    <button id="executeBulkAction" class="danger">Execute</button>
+    <div id="bulkMessage" class="message"></div>
+  </section>
+
+  <!-- Modal for Edit -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit User</h3>
+      <input type="text" id="editName" placeholder="Name">
+      <input type="tel" id="editPhone" placeholder="Phone">
+      <input type="text" id="editFacility" placeholder="Facility">
+      <select id="editRole">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <div class="button-group">
+        <button id="saveEditBtn" class="primary">Save</button>
+        <button id="cancelEditBtn" class="secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
